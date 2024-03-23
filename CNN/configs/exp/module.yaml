@@ -1,0 +1,57 @@
+module:
+  name: CoClassifier
+  config:
+    model:
+      name: ResNetTimeSeriesClassifier
+      config:
+        encoder_params:
+          encoding_size: 32
+          base_filters: 16
+          kernel_size: 64
+          stride: 1
+          groups: 1
+          n_block: 2
+          downsample_gap: 3 #1 
+          increasefilter_gap: 1
+          use_batch_norm: True
+          use_inner_do: True
+          inner_do_val: 0.3
+          use_final_do: True
+          final_do_val: 0.2
+          gap_fc: 'gap' # 'gap' or 'fc'
+          relu: 'normal' # 'leaky' or 'normal' or 'tanh'
+          verbose: False
+        classifier_params:
+          out_channels: 2
+    loss:
+      name: CrossEntropyLoss
+      
+    optimizer:
+      name: Adam
+      config: 
+        lr: 0.001
+    metrics:
+      - name: Accuracy
+        config:
+          average: macro
+          task: multiclass
+          num_classes: 2
+          multidim_average: global
+      - name: Precision
+        config:
+          average: macro
+          task: multiclass
+          num_classes: 2
+          multidim_average: global
+      - name: Recall
+        config:
+          average: macro
+          task: multiclass
+          num_classes: 2
+          multidim_average: global
+      - name: F1 
+        config:
+          average: macro
+          task: multiclass
+          num_classes: 2
+          multidim_average: global
