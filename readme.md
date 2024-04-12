@@ -21,15 +21,14 @@ The repository is organized as follows:
 │   │       ├── experiment.yaml
 │   │       └── module.yaml
 │   ├── datasets
-│   │   ├── co_class_dataset.py
-│   ├── __init__.py
+│   │   └── co_class_dataset.py
 │   ├── models
 │   │   ├── custom_layers.py
 │   │   ├── resnet.py
 │   │   └── resnet_time_series_classifier.py
 │   ├── modules
 │   │   ├── co_class_datamodule.py
-│   │   ├── co_class_module.py
+│   │   └── co_class_module.py
 │   ├── train.py
 │   └── utils
 │       ├── data.py
