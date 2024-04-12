@@ -11,42 +11,66 @@ from tqdm.auto import tqdm
 import torch
 import numpy as np
 from math import ceil
-from multiprocessing import Pool
 from CNN.utils import (parse_arguments, get_neptune_run,
                        get_experiment_config_dir)
 import CNN.modules as modules
 from .sca.preprocess import highpass
 
 
+def _cutSubWindows(traces, window_size, stride):
+    windows = []
+    n_iters = traces.shape[0] // stride
+    for i in range(n_iters):
+      start = i * stride
+      end = min(window_size + start, traces.shape[0])
+      windows.append(traces[start:end])
+      if end==traces.shape[0]:
+        break
+    return windows
+    
 def _predict(traces, module, window_size,
-             device, stride):
+             device, stride, batch_size=1024):
 
+    # Split traces into windows with stride
+    windows = _cutSubWindows(traces, window_size, stride)
+    # Last window can have different size, so we need to predict it separately
+    windows_np = np.array(windows[0:-1])
+    window_np = np.array(windows[-1])
+    del windows
+    
     classified_points = []
-    n_iters = ceil(traces.shape[0] / stride)
-
+    n_iters = ceil(len(windows_np) / batch_size)
     for i in tqdm(range(n_iters), leave=False):
+        start = i*batch_size
+        end = min((i+1)*batch_size, windows_np.shape[0])
+        real_batch_size = end - start
 
-        start = i * stride
-        end = min(traces.shape[0], window_size + i*stride)
-        curr_traces = traces[start: end]
+        curr_windows = windows_np[start : end]
+        curr_windows = curr_windows.reshape(real_batch_size, windows_np.shape[-1])
 
-        curr_traces = curr_traces.reshape(
-            1, min(window_size, len(curr_traces)))
-        curr_traces = torch.from_numpy(curr_traces)
-        curr_traces = curr_traces.to(device)
+        curr_windows = torch.from_numpy(curr_windows)
+        curr_windows = curr_windows.to(device)
+        
+        with torch.no_grad():
+            y_hat = module(curr_windows)
+            classified_points.append(y_hat.detach())
+    
+    curr_window = window_np.reshape(1, window_np.shape[-1])
+    curr_window = torch.from_numpy(curr_window)
+    curr_window = curr_window.to(device)
+    with torch.no_grad():
+        y_hat = module(curr_window)
+        classified_points.append(y_hat.detach())
+    
 
-        y_hat = module(curr_traces).cpu().detach().numpy()
-
-        classified_points.append(y_hat[0])
-
-    return classified_points
+    return torch.cat(classified_points, dim=0).cpu().data.numpy()
 
 
 def _slidingWindowClassify(module, traces, device, window_size, stride):
 
     classified_points = []
     for batch in tqdm(traces, colour='green'):
-        batch = highpass(batch, Wn=0.001)
+        batch = highpass(batch, 0.001)
         ret = _predict(batch, module, window_size, device, stride)
         classified_points.append(ret)
 
@@ -132,7 +156,7 @@ def classifyTrace(trace_file: str,
     module.to(device)
     module.eval()
 
-    traces = np.load(trace_file, mmap_mode='r')[:3]
+    traces = np.load(trace_file, mmap_mode='r')
 
     segmentation = _slidingWindowClassify(module, traces, device,
                                           window_size, stride)

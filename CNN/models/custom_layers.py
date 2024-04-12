@@ -11,7 +11,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class Conv1dPadSame(nn.Module):
     """
     Extend nn.Conv1d to support SAME padding

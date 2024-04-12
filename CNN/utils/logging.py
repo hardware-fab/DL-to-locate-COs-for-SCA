@@ -9,12 +9,10 @@ Authors :
 
 import os
 import shutil
-import pandas as pd
 from omegaconf import OmegaConf
 
 from datetime import datetime
 
-# import neptune.new as neptune
 import neptune
 
 from pytorch_lightning.loggers import NeptuneLogger
@@ -37,7 +35,7 @@ def build_neptune_logger(exp_name, tags, neptune_config_file):
     kwargs['tags'] = tags
 
     kwargs['source_files'] = [
-        '/exp/*'
+        'CNN/*'
     ]
 
     neptune_logger = NeptuneLogger(api_key=token, **kwargs)
@@ -56,22 +54,10 @@ def get_neptune_run(neptune_config_file, SID):
     kwargs['prefix'] = 'experiment'
     kwargs['project'] = f'{user}/{project}'
 
-    # run = neptune.init_run(
-    #     api_token=token, project=f'{user}/{project}', with_id=SID, mode='read-only')
-    # df = pd.DataFrame.from_dict(run.get_structure())
-
     project = neptune.init_project(
         api_token=token, project=f'{user}/{project}', mode='read-only')
     df = project.fetch_runs_table().to_pandas()
 
-    # print(df.columns)
-
-    # print(os.path.basename(df['experiment/model/best_model_path'][0]))
-
-    # print("\nNeptune run with id {} reloaded.".format(
-    #     run['sys/id'].fetch()))
-    # print("Experiment name: {}\n".format(
-    #     run['sys/name'].fetch()))
     df = df[df['sys/id'] == SID]
 
     return df

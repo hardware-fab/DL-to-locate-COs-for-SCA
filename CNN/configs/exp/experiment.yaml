@@ -1,15 +1,6 @@
-#
-# Authors : 
-#     Giuseppe Chiari (giuseppe.chiari@polimi.it),
-#     Davide Galli (davide.galli@polimi.it),
-#     Francesco Lattari (francesco.lattari@polimi.it),
-#     Matteo Matteucci (matteo.matteucci@polimi.it),
-#     Davide Zoni (davide.zoni@polimi.it)
-#
-
 experiment:
   name: ResNet_v1
-  log_dir: </path/to/log/dir>
+  log_dir: path/to/log_dir
   neptune_config_file: CNN/configs/common/neptune_configs.yaml 
   seed: 314159
   early_stop:

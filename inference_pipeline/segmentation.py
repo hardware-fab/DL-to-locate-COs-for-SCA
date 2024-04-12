@@ -29,7 +29,7 @@ def squareWave(signal: np.ndarray) -> np.ndarray:
 
     # Last 100 samples are removed to avoid noise
     signal = signal[:-100]
-    threshold = np.mean(signal)
+    threshold = np.mean(signal)-0.08
 
     square_signal = []
     for value in signal:
@@ -94,7 +94,9 @@ def getStartCOs(square_signal: np.ndarray,
 
 def plotStartCOs(startCOs: np.ndarray,
                  classifications: np.ndarray,
-                 n_trace: int = 0):
+                 n_trace: int = 0,
+                 *,
+                 xlim = (-10, 3_000)):
     """
     Plot the start COs samples over the sliding window classification output.
     Useful to check if the COs are correctly located.
@@ -107,13 +109,15 @@ def plotStartCOs(startCOs: np.ndarray,
         The sliding window classification output.
     `n_trace` : int, optional
         The trace number to plot (default is 0).
+    `xlim` : tuple, optional
+        The x-axis limits of the plot (default is (-10, 3_000)).
     """
 
     fig, ax = plt.subplots(1, figsize=(13, 5))
     plt.rcParams.update({'font.size': 18})
     fig.tight_layout(pad=2.0)
 
-    ax.set_xlim((-10, 10_000))
+    ax.set_xlim(xlim)
     ax.set_title("Start COs samples")
     for sample in startCOs[n_trace]:
         ax.axvline(x=sample, color='r', linestyle='--')

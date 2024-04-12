@@ -14,7 +14,7 @@ import numpy as np
 import scipy.signal
 
 def highpass(traces: np.ndarray,
-             Wn: float = 0.002) -> np.ndarray:
+             Wn: float = 0.001) -> np.ndarray:
     """
     Applies a 3rd-order high-pass filter to the traces.
 

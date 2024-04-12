@@ -134,6 +134,7 @@ class CoClassifier(pl.LightningModule):
 
         fig, axis = plt.subplots(figsize=(16, 12))
         ConfusionMatrixDisplay.from_predictions(target, preds, ax=axis)
+        #plot_confusion_matrix(target, preds, ax=axis)
         self.logger.experiment['{}/confusion_matrix'.format(which_subset)].log(
             neptune.types.File.as_image(fig))
 

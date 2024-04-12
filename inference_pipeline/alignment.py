@@ -37,25 +37,25 @@ def alignCos(trace: np.ndarray,
             start = peaks[p_id] * stride
             end = trace.shape[1] - 1 if p_id == len(peaks)-1 else peaks[p_id + 1] * stride
             cos.append(trace[n_trace, start:end])
-        algned_cos.append(np.asarray(cos, dtype=object))
+        algned_cos.extend(np.asarray(cos, dtype=object))
         
     return algned_cos
 
-def saveCos(cos: np.ndarray,
+def saveCos(cos: list,
             output_file: str):
     """
     Save the aligned COs to a file.
     
     Parameters
     ----------
-    `cos` : np.ndarray
+    `cos` : list
         The aligned COs.
     `output_file` : str
         The file to save the aligned COs.
     """
     
     # COs have diffent length, so we need to save them as object
-    np.save(output_file, cos, dtype=object)
+    np.save(output_file, np.array(cos, dtype=object))
     
 def padCos(cos_to_pad):
     """

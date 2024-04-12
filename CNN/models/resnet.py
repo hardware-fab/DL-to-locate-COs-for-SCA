@@ -12,7 +12,6 @@ import torch.nn.functional as F
 
 from .custom_layers import Conv1dPadSame, MaxPool1dPadSame
 
-
 class ResidualBlock(nn.Module):
     """
     ResNet basic residual block
@@ -119,6 +118,17 @@ class ResNet(nn.Module):
                  use_batch_norm=True, use_inner_do=True, inner_do_val=0.5,
                  use_final_do=True, final_do_val=0.2, gap_fc='gap', relu='normal', verbose=False):
         super(ResNet, self).__init__()
+        '''
+        Create new ResNet encoder module.
+        encoding_size: dimension of encoder latent space
+        base_filters: number of filters in the first several Conv layer, it will double at every 4 layers
+        kernel_size: width of kernel
+        stride: stride of kernel moving
+        groups: set larget to 1 as ResNeXt
+        n_block: number of blocks
+        ido_val: inner blocks dropout value
+        fdo_val: final layer dropout value
+        '''
 
         self.verbose = verbose
         self.n_block = n_block
@@ -155,6 +165,7 @@ class ResNet(nn.Module):
                 is_first_block = False
             # downsample at every self.downsample_gap blocks
             if i_block % self.downsample_gap == 0 and i_block != 0:
+
                 downsample = True
             else:
                 downsample = False
@@ -166,6 +177,7 @@ class ResNet(nn.Module):
                 # increase filters at every self.increasefilter_gap blocks
                 in_channels = int(
                     base_filters*2**((i_block-1)//self.increasefilter_gap))
+
                 if (i_block % self.increasefilter_gap == 0) and (i_block != 0):
                     out_channels = in_channels * 2
                 else:
@@ -187,6 +199,7 @@ class ResNet(nn.Module):
 
         # final
         self.final_bn = nn.BatchNorm1d(out_channels)
+
         self.final_relu = nn.Tanh() if self.relu == 'tanh' else nn.ReLU(
         ) if self.relu == 'normal' else nn.LeakyReLU()
 
@@ -200,7 +213,7 @@ class ResNet(nn.Module):
         # FullyConnected layer
         if gap_fc == 'fc':
             self.flatten = nn.Flatten()
-            # in_features di Linear: 64 (out_channels) * {7_500, 10_000}
+
             in_features_fc1 = (
                 self.out_channels * 20_000)
             out_features_fc1 = self.out_channels
@@ -210,6 +223,7 @@ class ResNet(nn.Module):
             ) if self.relu == 'normal' else nn.LeakyReLU()
 
         self.encoding = nn.Linear(self.out_channels, self.encoding_size)
+
         self.enc_relu = nn.Tanh() if self.relu == 'tanh' else nn.ReLU(
         ) if self.relu == 'normal' else nn.LeakyReLU()
 

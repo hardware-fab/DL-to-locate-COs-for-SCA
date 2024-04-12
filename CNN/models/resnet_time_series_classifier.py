@@ -35,7 +35,7 @@ class ResNetTimeSeriesClassifier(nn.Module):
         self.encoder = ResNet(**encoder_params)
 
         self.encoder.apply(init_weights)
-
+        
         self.classifier = nn.Linear(self.encoder.encoding_size,
                                     classifier_params['out_channels'])
         # Xavier/He weights initialization
