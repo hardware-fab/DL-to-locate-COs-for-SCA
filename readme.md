@@ -62,10 +62,10 @@ The dataset is organized as follows:
 
 ## Note
 
-This work is part of [1] available [online](https://arxiv.org/abs/2402.19037).
+This work is part of [1] available [online](https://ieeexplore.ieee.org/abstract/document/10546758).
 
 This repository is protected by copyright and licensed under the [Apache-2.0 license](https://github.com/hardware-fab/DL-to-locate-COs-for-SCA/blob/main/LICENSE) file.
 
 © 2024 hardware-fab
 
-> [1] Chiari, G., Galli, D., Lattari, F., Matteucci, M., & Zoni, D. (2024). A Deep-Learning Technique to Locate Cryptographic Operations in Side-Channel Traces. arXiv preprint arXiv:2402.19037.
+> [1] G. Chiari, D. Galli, F. Lattari, M. Matteucci and D. Zoni, "A Deep- Learning Technique to Locate Cryptographic Operations in Side-Channel Traces," 2024 Design, Automation & Test in Europe Conference & Exhibition (DATE), Valencia, Spain, 2024, pp. 1-6, doi: 10.23919/DATE58400.2024.10546758.
